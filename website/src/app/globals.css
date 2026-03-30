@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "../styles/design-tokens.css";
+
+@font-face {
+  font-family: "Ultimatum Heavy";
+  src: url("/fonts/cc-ultimatum-heavy.otf") format("opentype");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
+  body {
+    color: var(--text);
+    background: var(--bg-base);
+    font-family: var(--font-sans);
+  }
+
+  /* Smooth scroll for anchor links */
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Hero CTA container - text + button share same width */
+.hero-cta-container {
+  container-type: inline-size;
+  container-name: hero;
+}

@@ -1,0 +1,48 @@
+/**
+ * Design Tokens - Single source of truth for design system
+ * Used by Tailwind and components
+ */
+
+:root {
+  /* Backgrounds */
+  --bg-base: #ffffff;
+  --bg-card: #fffef9;
+  --bg-elevated: #fff8e7;
+  --bg-dark: #0f0f0f;
+
+  /* Borders */
+  --border: #f0e6d3;
+  --border-hover: #f5dca7;
+
+  /* Accent - BGMI-inspired orange */
+  --accent: #f97316;
+  --accent-muted: #ea580c;
+  --accent-glow: rgba(249, 115, 22, 0.15);
+
+  /* Semantic colors */
+  --yellow: #eab308;
+  --yellow-muted: #ca8a04;
+  --orange: #f97316;
+  --orange-muted: #ea580c;
+
+  /* Text */
+  --text: #1c1917;
+  --text-muted: #57534e;
+  --text-dim: #78716c;
+  --text-inverse: #ffffff;
+
+  /* Spacing scale (Tailwind-compatible) */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  /* Typography */
+  --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  --font-display: var(--font-sans);
+  --font-ultimatum: "Ultimatum Heavy", ui-sans-serif, system-ui, sans-serif;
+}
