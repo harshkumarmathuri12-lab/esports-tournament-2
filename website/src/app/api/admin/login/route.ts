@@ -1,34 +1,47 @@
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import { NextResponse } from "next/server";
-import { getStore } from "@/lib/store";
-import { cookies } from "next/headers";
 
-const SESSION_COOKIE = "admin_session";
-const SESSION_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
+const TEMP_ADMIN = {
+  id: "temp-admin-1",
+  email: "admin@example.com",
+  // Password: admin123
+  passwordHash: "$2b$10$ZEYPIVjXGH2XX4A61Xfr/e88estLxv4mz5ACbj3DzToKAm5t1b2cW",
+};
 
 export async function POST(request: Request) {
-  const { adminname, password } = await request.json();
-  if (!adminname || !password) {
-    return NextResponse.json({ error: "Admin name and password required" }, { status: 400 });
+  const { email, password } = await request.json();
+
+  if (!email || !password || typeof email !== "string" || typeof password !== "string") {
+    return NextResponse.json({ error: "Email and password required" }, { status: 400 });
   }
-  const admin = await getStore().loginAdmin(adminname, password);
-  if (!admin) {
+
+  const jwtSecret = process.env.JWT_SECRET;
+  if (!jwtSecret) {
+    return NextResponse.json({ error: "Server misconfigured" }, { status: 500 });
+  }
+
+  const normalizedEmail = email.trim().toLowerCase();
+  if (normalizedEmail !== TEMP_ADMIN.email) {
     return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
   }
-  const cookieStore = await cookies();
-  cookieStore.set(SESSION_COOKIE, admin.id, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: SESSION_MAX_AGE,
-    path: "/",
-  });
+
+  const passwordMatches = await bcrypt.compare(password, TEMP_ADMIN.passwordHash);
+  if (!passwordMatches) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const token = jwt.sign(
+    {
+      sub: TEMP_ADMIN.id,
+      email: TEMP_ADMIN.email,
+      role: "admin",
+    },
+    jwtSecret,
+    { expiresIn: "7d" }
+  );
+
   return NextResponse.json({
-    id: admin.id,
-    adminname: admin.adminname,
-    isMasterAdmin: admin.isMasterAdmin,
-    usersAccess: admin.usersAccess,
-    coinsAccess: admin.coinsAccess,
-    gamesAccessType: admin.gamesAccessType,
-    allowedGameIds: admin.allowedGameIds,
+    token,
   });
 }
