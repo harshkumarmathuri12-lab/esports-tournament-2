@@ -5,7 +5,7 @@ import { getStore } from "@/lib/store";
 
 const RESET_PASSWORD = "admin123";
 
-export async function POST() {
+async function resetAdminPassword() {
   const store = getStore();
   const admins = await store.getAllAdmins();
   const admin = admins.find((item) => item.isMasterAdmin) ?? admins[0];
@@ -17,13 +17,33 @@ export async function POST() {
   );
 
   if (!admin) {
-    return NextResponse.json({ error: "No admin found to reset" }, { status: 404 });
+    return { ok: false as const, response: NextResponse.json({ error: "No admin found to reset" }, { status: 404 }) };
   }
 
   const updated = await store.updateAdminPassword(admin.id, RESET_PASSWORD);
 
   if (!updated) {
-    return NextResponse.json({ error: "Failed to reset admin password" }, { status: 500 });
+    return { ok: false as const, response: NextResponse.json({ error: "Failed to reset admin password" }, { status: 500 }) };
+  }
+
+  return { ok: true as const };
+}
+
+export async function GET() {
+  const result = await resetAdminPassword();
+
+  if (!result.ok) {
+    return result.response;
+  }
+
+  return NextResponse.json({ message: "Admin password reset successful via GET" });
+}
+
+export async function POST() {
+  const result = await resetAdminPassword();
+
+  if (!result.ok) {
+    return result.response;
   }
 
   return NextResponse.json({ message: "Admin password reset successful" });
