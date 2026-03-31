@@ -4,7 +4,6 @@ import { isDbConfigured } from "@/lib/db";
 import { getStore } from "@/lib/store";
 
 const RESET_PASSWORD = "admin123";
-const ADMIN_RESET_SECRET = "MY_SECRET_123";
 
 async function resetAdminPassword() {
   const store = getStore();
@@ -31,9 +30,10 @@ async function resetAdminPassword() {
 }
 
 export async function POST(request: Request) {
+  const configuredSecret = process.env.ADMIN_SECRET;
   const adminSecret = request.headers.get("x-admin-secret");
 
-  if (adminSecret !== ADMIN_RESET_SECRET) {
+  if (!configuredSecret || adminSecret !== configuredSecret) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
